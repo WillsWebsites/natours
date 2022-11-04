@@ -1,7 +1,9 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable prefer-object-spread */
 const Tour = require('../models/tourModel')
 const APIFeatures = require('../utils/apiFeatures')
 const catchAsync = require('../utils/catchAsync')
+const AppError = require('../utils/appError')
 
 // Route Handlers
 exports.topTours = (req, res, next) => {
@@ -31,6 +33,11 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 
 exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id)
+
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404))
+  }
+
   res.status(200).json({
     status: 'success',
     results: tour.length,
@@ -41,12 +48,12 @@ exports.getTour = catchAsync(async (req, res, next) => {
 })
 
 exports.addTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body)
+  const tour = await Tour.create(req.body)
 
   res.status(201).json({
     status: 'success',
     data: {
-      tour: newTour,
+      tour,
     },
   })
 })
