@@ -10,6 +10,7 @@ const AppError = require('./utils/appError')
 const GlobalErrorHandler = require('./controller/errorController')
 const tourRouter = require('./routes/tourRoutes')
 const userRouter = require('./routes/userRoutes')
+const reviewRouter = require('./routes/reviewRoutes')
 
 const app = express()
 
@@ -59,6 +60,7 @@ app.use((req, _, next) => {
 
 app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
+app.use('/api/v1/reviews', reviewRouter)
 
 app.all('*', (req, _, next) => {
   next(new AppError(`Couldn't find the requested route: ${req.originalUrl}`, 404))
