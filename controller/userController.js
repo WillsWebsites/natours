@@ -1,6 +1,7 @@
 const User = require('../models/userModel')
 const AppError = require('../utils/appError')
 const catchAsync = require('../utils/catchAsync')
+const factory = require('./handlerFactory')
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {}
@@ -10,17 +11,10 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj
 }
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find()
-
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: {
-      users,
-    },
-  })
-})
+exports.getMe = (req, _, next) => {
+  req.params.id = req.user.id
+  next()
+}
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // Create error if user POSTs password data
@@ -59,30 +53,18 @@ exports.deleteMe = catchAsync(async (req, res) => {
   })
 })
 
-exports.addUser = (req, res) => {
+exports.addUser = (_, res) => {
   res.status(500).json({
     status: 'error',
-    message: `This route isn't created yet`,
+    message: `This route won't ever be created. Use /signup instead`,
   })
 }
 
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: `This route isn't created yet`,
-  })
-}
+exports.getAllUsers = factory.getAll(User)
 
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: `This route isn't created yet`,
-  })
-}
+exports.getUser = factory.getOne(User)
 
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: `This route isn't created yet`,
-  })
-}
+// Do NOT updates passwords with this because it doesn't run middleware
+exports.updateUser = factory.updateOne(User)
+
+exports.deleteUser = factory.deleteOne(User)

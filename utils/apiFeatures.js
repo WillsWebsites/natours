@@ -11,7 +11,6 @@ class APIFeatures {
 
     let queryStr = JSON.stringify(queryObj)
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
-    // if (queryStr) console.log(JSON.parse(queryStr), 'hello')
 
     this.query = this.query.find(JSON.parse(queryStr))
 
@@ -21,7 +20,6 @@ class APIFeatures {
   sort() {
     if (this.queryStr.sort) {
       const sortBy = this.queryStr.sort.split(',').join(' ')
-      console.log(sortBy)
       this.query = this.query.sort(sortBy)
     } else {
       this.query = this.query.sort('-createdAt')
