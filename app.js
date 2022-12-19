@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path')
 const morgan = require('morgan')
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
@@ -14,7 +15,12 @@ const reviewRouter = require('./routes/reviewRoutes')
 
 const app = express()
 
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, 'views'))
+
 // Global Middleware
+app.use(express.static(path.join(__dirname, 'public')))
+
 app.use(helmet())
 
 if (process.env.NODE_ENV === 'dev') {
@@ -51,11 +57,13 @@ app.use(
   })
 )
 
-app.use(express.static(`${__dirname}/public`))
-
 app.use((req, _, next) => {
   req.requestTime = new Date().toISOString()
   next()
+})
+
+app.get('/', (req, res) => {
+  res.status(200).render('base')
 })
 
 app.use('/api/v1/tours', tourRouter)
