@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 const morgan = require('morgan')
 const rateLimit = require('express-rate-limit')
-const helmet = require('helmet')
+// const helmet = require('helmet')
 const mongoSanitize = require('express-mongo-sanitize')
 const xss = require('xss-clean')
 const hpp = require('hpp')
@@ -12,6 +12,7 @@ const GlobalErrorHandler = require('./controller/errorController')
 const tourRouter = require('./routes/tourRoutes')
 const userRouter = require('./routes/userRoutes')
 const reviewRouter = require('./routes/reviewRoutes')
+const viewRouter = require('./routes/viewRoutes')
 
 const app = express()
 
@@ -21,7 +22,7 @@ app.set('views', path.join(__dirname, 'views'))
 // Global Middleware
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use(helmet())
+// app.use(helmet())
 
 if (process.env.NODE_ENV === 'dev') {
   app.use(morgan('dev'))
@@ -62,10 +63,7 @@ app.use((req, _, next) => {
   next()
 })
 
-app.get('/', (req, res) => {
-  res.status(200).render('base')
-})
-
+app.use('/', viewRouter)
 app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/reviews', reviewRouter)
