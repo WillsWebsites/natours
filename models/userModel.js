@@ -28,7 +28,10 @@ const userSchema = new mongoose.Schema({
       'Must be an email in a similar format to test@test.com',
     ],
   },
-  photo: String,
+  photo: {
+    type: String,
+    default: 'default.jpg',
+  },
   role: {
     type: String,
     enum: ['user', 'guide', 'lead-guide', 'admin'],

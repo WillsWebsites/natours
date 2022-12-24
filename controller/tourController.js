@@ -3,6 +3,47 @@ const Tour = require('../models/tourModel')
 const catchAsync = require('../utils/catchAsync')
 const factory = require('./handlerFactory')
 const AppError = require('../utils/appError')
+const multer = require('multer')
+const sharp = require('sharp')
+
+const multerStorage = multer.memoryStorage()
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true)
+  } else {
+    cb(new AppError('Not an image, please upload only images', 400), false)
+  }
+}
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+})
+
+exports.uploadTourImages = upload.fields([
+  {
+    name: 'imageCover',
+    maxCount: 1,
+  },
+  {
+    name: 'images',
+    maxCount: 3,
+  },
+])
+
+// Not accurate to file saving to consider multiple images. refer to video to complete
+exports.resizeTourImage = catchAsync(async (req, res, next) => {
+  if (!req.files) return next()
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.file.filename}`)
+
+  next()
+})
 
 exports.getAllTours = factory.getAll(Tour)
 
